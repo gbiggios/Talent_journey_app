@@ -1,0 +1,25 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Detalles de Asistencia{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Detalles de Asistencia para {{ clase.taller.nombre }} - {{ clase.fecha.strftime('%d-%m-%Y') }}</h1>
+
+    <h2>Estudiantes Presentes</h2>
+    <ul>
+        {% for estudiante in estudiantes_presentes %}
+        <li>{{ estudiante.nombre }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Estudiantes Ausentes</h2>
+    <ul>
+        {% for estudiante in estudiantes_ausentes %}
+        <li>{{ estudiante.nombre }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('asistencias_admin_dashboard') }}" class="btn btn-secondary mt-3">Volver al Dashboard</a>
+</div>
+{% endblock %}

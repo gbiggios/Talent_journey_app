@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clases</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="/">
+                <img src="../static/img/insignia_catemu_2.png" alt="Insignia Catemu" style="height: 40px; margin-right: 10px;">
+                Gestión de Talleres Catemu
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="/docentes">Docentes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/salas">Salas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/talleres">Talleres</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/clases">Clases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/estudiantes">Estudiantes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/estudiantes_taller">Estudiantes en Talleres</a></li>
+
+
+                    <li class="nav-item"><a class="nav-link" href="/bitacoras/taller_bitacoras">Bitácoras de Talleres</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/asistencias/monthly_report">Reporte Mensual</a></li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Loggeado como {{ 'Administrador' if current_user.is_admin else 'Docente' }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="{{ url_for('auth.change_password') }}">Cambiar Contraseña</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar Sesión</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="container mt-5">
+        <h1 class="mb-4">Clases</h1>
+        <div class="accordion" id="accordionTalleres">
+            {% for taller in talleres %}
+            <div class="card">
+                <div class="card-header" id="heading{{ taller.taller_id }}">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ taller.taller_id }}" aria-expanded="true" aria-controls="collapse{{ taller.taller_id }}">
+                            {{ taller.nombre }}
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapse{{ taller.taller_id }}" class="collapse" aria-labelledby="heading{{ taller.taller_id }}" data-parent="#accordionTalleres">
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Comentario Bitácora</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for clase in taller.clases %}
+                                <tr>
+                                    <td>{{ clase.fecha }}</td>
+                                    <td>{{ clase.comentario_bitacora }}</td>
+                                    <td>
+                                        <a href="{{ url_for('clases.edit_clase', id_clase=clase.id_clase) }}" class="btn btn-primary btn-sm">Editar</a>
+                                        <form action="{{ url_for('clases.delete_clase', id_clase=clase.id_clase) }}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2 class="mt-5">Agregar Clase Individual</h2>
+        <form action="{{ url_for('clases.create_clase') }}" method="post" class="mb-5">
+            <div class="form-group">
+                <label for="taller_id">Taller</label>
+                <select class="form-control" id="taller_id" name="taller_id" required>
+                    {% for taller in talleres %}
+                    <option value="{{ taller.taller_id }}">{{ taller.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+                <label for="comentario_bitacora">Comentario Bitácora</label>
+                <textarea class="form-control" id="comentario_bitacora" name="comentario_bitacora"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar</button>
+        </form>
+
+        <h2 class="mt-5">Agregar Múltiples Clases</h2>
+        <form action="{{ url_for('clases.create_multiple_clases') }}" method="post" class="mb-5">
+            <div class="form-group">
+                <label for="taller_id_multiple">Taller</label>
+                <select class="form-control" id="taller_id_multiple" name="taller_id" required>
+                    {% for taller in talleres %}
+                    <option value="{{ taller.taller_id }}">{{ taller.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fecha_inicio">Fecha de Inicio</label>
+                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+            </div>
+            <div class="form-group">
+                <label for="fecha_fin">Fecha de Fin</label>
+                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
+            </div>
+            <div class="form-group">
+                <label for="dia_semana">Día de la Semana</label>
+                <select class="form-control" id="dia_semana" name="dia_semana" required>
+                    <option value="Lunes">Lunes</option>
+                    <option value="Martes">Martes</option>
+                    <option value="Miércoles">Miércoles</option>
+                    <option value="Jueves">Jueves</option>
+                    <option value="Viernes">Viernes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="comentario_bitacora_multiple">Comentario Bitácora</label>
+                <textarea class="form-control" id="comentario_bitacora_multiple" name="comentario_bitacora"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar Múltiples Clases</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

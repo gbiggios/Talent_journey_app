@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Taller</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="/">
+                <img src="{{ url_for('static', filename='img/insignia_catemu_2.png') }}" alt="Insignia Catemu" style="height: 40px; margin-right: 10px;">
+                Gestión de Talleres Catemu
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="/docentes">Docentes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/salas">Salas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/talleres">Talleres</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/clases">Clases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/estudiantes">Estudiantes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/estudiantes_taller">Estudiantes en Talleres</a></li>
+
+
+                    <li class="nav-item"><a class="nav-link" href="/bitacoras/taller_bitacoras">Bitácoras de Talleres</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/asistencias/monthly_report">Reporte Mensual</a></li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Loggeado como {{ 'Administrador' if current_user.is_admin else 'Docente' }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="{{ url_for('auth.change_password') }}">Cambiar Contraseña</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar Sesión</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Seleccionar Taller para Ver Historial de Asistencia</h1>
+        <div class="list-group">
+            {% for taller in talleres %}
+            <a href="{{ url_for('historial.historial_asistencia', taller_id=taller.taller_id) }}" class="list-group-item list-group-item-action">
+                {{ taller.nombre }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <p>&copy; <span id="currentYear"></span> Gestión de Talleres Catemu. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

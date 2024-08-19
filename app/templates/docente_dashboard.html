@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard del Docente</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar-brand {
+            font-size: 1.5em;
+        }
+        .card-header {
+            background-color: #343a40;
+            color: white;
+        }
+        .card-header h2 button {
+            color: white;
+            text-decoration: none;
+        }
+        .card-body ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .card-body ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .card-body ul li:last-child {
+            border-bottom: none;
+        }
+        .card-body ul li a {
+            color: #007bff;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-body ul li a:hover {
+            text-decoration: none;
+            color: #0056b3;
+        }
+        .calendar-icon {
+            margin-right: 10px;
+            color: #007bff;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Gestión de Talleres</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('planificacion.listar_planificaciones_docente') }}">Planificaciones</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ current_user.docente.nombre }} {{ current_user.docente.apellido_paterno }} {{ current_user.docente.apellido_materno }}
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="{{ url_for('auth.change_password') }}">Cambiar Contraseña</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Cerrar Sesión</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container mt-5">
+        <h1>Dashboard del Docente</h1>
+        <div class="accordion" id="talleresAccordion">
+            {% for taller in talleres %}
+            <div class="card">
+                <div class="card-header" id="heading{{ taller.taller_id }}">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ taller.taller_id }}" aria-expanded="true" aria-controls="collapse{{ taller.taller_id }}">
+                            {{ taller.nombre }}
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="collapse{{ taller.taller_id }}" class="collapse" aria-labelledby="heading{{ taller.taller_id }}" data-parent="#talleresAccordion">
+                    <div class="card-body">
+                        <h5>Clases Asignadas:</h5>
+                        <ul>
+                            {% for clase in taller.clases %}
+                            <li>
+                                <a href="{{ url_for('docente.clase_detalle', clase_id=clase.id_clase) }}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-calendar-alt calendar-icon"></i>
+                                            {{ clase.nombre }}
+                                        </div>
+                                        <span>{{ clase.fecha }}</span>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+</body>
+</html>

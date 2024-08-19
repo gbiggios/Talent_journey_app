@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Clase</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Seleccionar Clase</h1>
+        <form action="{{ url_for('asistencias.select_clase') }}" method="post">
+            <div class="form-group">
+                <label for="id_clase">Clase</label>
+                <select name="id_clase" id="id_clase" class="form-control" required>
+                    {% for clase in clases %}
+                    <option value="{{ clase.id_clase }}">{{ clase.taller.nombre }} - {{ clase.fecha }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Seleccionar</button>
+        </form>
+    </div>
+</body>
+</html>

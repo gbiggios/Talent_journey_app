@@ -1,0 +1,173 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Gestión de Talleres</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert alert-dismissible fade show">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Agregar Taller</h2>
+    <form action="{{ url_for('admin.talleres_admin.talleres_admin_crear') }}" method="POST" class="mb-5">
+        <div class="form-group">
+            <label for="nombre">Nombre del Taller</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="horario">Horario</label>
+            <select id="horario" name="horario" class="form-control" required>
+                <option value="Lunes 17:00-18:00">Lunes 17:00-18:00</option>
+                <option value="Lunes 19:30-20:30">Lunes 19:30-20:30</option>
+                <option value="Martes 17:00-18:00">Martes 17:00-18:00</option>
+                <option value="Martes 19:30-20:30">Martes 19:30-20:30</option>
+                <option value="Miércoles 17:00-18:00">Miércoles 17:00-18:00</option>
+                <option value="Miércoles 19:30-20:30">Miércoles 19:30-20:30</option>
+                <option value="Jueves 17:00-18:00">Jueves 17:00-18:00</option>
+                <option value="Jueves 19:30-20:30">Jueves 19:30-20:30</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="id_sala">Sala</label>
+            <select id="id_sala" name="id_sala" class="form-control" required>
+                {% for sala in salas %}
+                <option value="{{ sala.id_sala }}">{{ sala.nombre_sala }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="id_docente">Docente</label>
+            <select id="id_docente" name="id_docente" class="form-control" required>
+                {% for docente in docentes %}
+                <option value="{{ docente.id_docente }}">{{ docente.nombre }} {{ docente.apellido_paterno }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar Taller</button>
+    </form>
+
+    <h2>Lista de Talleres</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Horario</th>
+                <th>Sala</th>
+                <th>Docente</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for taller in talleres %}
+            <tr>
+                <td>{{ taller.taller_id }}</td>
+                <td>{{ taller.nombre }}</td>
+                <td>{{ taller.horario }}</td>
+                <td>{{ taller.sala.nombre_sala }}</td>
+                <td>{{ taller.docente.nombre }} {{ taller.docente.apellido_paterno }}</td>
+                <td>
+                    <form action="{{ url_for('admin.talleres_admin.talleres_admin_eliminar', taller_id=taller.taller_id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este taller?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editTallerModal" 
+                            data-id="{{ taller.taller_id }}" 
+                            data-nombre="{{ taller.nombre }}" 
+                            data-horario="{{ taller.horario }}" 
+                            data-sala="{{ taller.id_sala }}" 
+                            data-docente="{{ taller.id_docente }}">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal para editar taller -->
+<div class="modal fade" id="editTallerModal" tabindex="-1" aria-labelledby="editTallerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editTallerForm" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editTallerModalLabel">Editar Taller</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit_id" name="taller_id">
+                    <div class="form-group">
+                        <label for="edit_nombre">Nombre del Taller</label>
+                        <input type="text" id="edit_nombre" name="nombre" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_horario">Horario</label>
+                        <select id="edit_horario" name="horario" class="form-control" required>
+                            <option value="Lunes 17:00-18:00">Lunes 17:00-18:00</option>
+                            <option value="Lunes 19:30-20:30">Lunes 19:30-20:30</option>
+                            <option value="Martes 17:00-18:00">Martes 17:00-18:00</option>
+                            <option value="Martes 19:30-20:30">Martes 19:30-20:30</option>
+                            <option value="Miércoles 17:00-18:00">Miércoles 17:00-18:00</option>
+                            <option value="Miércoles 19:30-20:30">Miércoles 19:30-20:30</option>
+                            <option value="Jueves 17:00-18:00">Jueves 17:00-18:00</option>
+                            <option value="Jueves 19:30-20:30">Jueves 19:30-20:30</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_id_sala">Sala</label>
+                        <select id="edit_id_sala" name="id_sala" class="form-control" required>
+                            {% for sala in salas %}
+                            <option value="{{ sala.id_sala }}">{{ sala.nombre_sala }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_id_docente">Docente</label>
+                        <select id="edit_id_docente" name="id_docente" class="form-control" required>
+                            {% for docente in docentes %}
+                            <option value="{{ docente.id_docente }}">{{ docente.nombre }} {{ docente.apellido_paterno }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $('#editTallerModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var id = button.data('id');
+        var nombre = button.data('nombre');
+        var horario = button.data('horario');
+        var sala = button.data('sala');
+        var docente = button.data('docente');
+
+        var modal = $(this);
+        modal.find('#edit_id').val(id);
+        modal.find('#edit_nombre').val(nombre);
+        modal.find('#edit_horario').val(horario);
+        modal.find('#edit_id_sala').val(sala);
+        modal.find('#edit_id_docente').val(docente);
+        modal.find('#editTallerForm').attr('action', '{{ url_for("admin.talleres_admin.talleres_admin_editar_post", taller_id=0) }}'.replace('0', id));
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tomar Asistencia</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Tomar Asistencia</h1>
+        <h2>{{ clase.taller.nombre }} - {{ clase.fecha }}</h2>
+        <form action="{{ url_for('asistencias.take_attendance', id_clase=clase.id_clase) }}" method="post">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Presente</th>
+                        <th>Justificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for estudiante in estudiantes %}
+                    <tr>
+                        <td>{{ estudiante.nombre }} {{ estudiante.apellido_paterno }} {{ estudiante.apellido_materno }} ({{ estudiante.rut_estudiante }})</td>
+                        <td>
+                            <input type="checkbox" name="presencia_{{ estudiante.id_estudiante }}" {% if asistencias.get(estudiante.id_estudiante) and asistencias[estudiante.id_estudiante].presencia %}checked{% endif %}>
+                        </td>
+                        <td>
+                            <input type="text" name="justificacion_{{ estudiante.id_estudiante }}" class="form-control" value="{{ asistencias.get(estudiante.id_estudiante) and asistencias[estudiante.id_estudiante].justificacion }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="form-group">
+                <label for="comentario_bitacora">Comentario de Bitácora</label>
+                <textarea name="comentario_bitacora" id="comentario_bitacora" class="form-control">{{ clase.comentario_bitacora }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Asistencia y Bitácora</button>
+        </form>
+    </div>
+</body>
+</html>

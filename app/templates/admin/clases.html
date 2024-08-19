@@ -1,0 +1,167 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Gestión de Clases</h1>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="individual-tab" data-toggle="tab" href="#individual" role="tab" aria-controls="individual" aria-selected="true">Crear Clase Individual</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="multiple-tab" data-toggle="tab" href="#multiple" role="tab" aria-controls="multiple" aria-selected="false">Crear Múltiples Clases</a>
+        </li>
+    </ul>
+
+    <!-- Tab content -->
+    <div class="tab-content" id="myTabContent">
+        <!-- Crear Clase Individual -->
+        <div class="tab-pane fade show active" id="individual" role="tabpanel" aria-labelledby="individual-tab">
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Crear Clase Única</h5>
+                    <form action="{{ url_for('admin.clases_admin.clases_admin_create') }}" method="POST">
+                        <div class="form-group">
+                            <label for="taller_id">Taller</label>
+                            <select id="taller_id" name="taller_id" class="form-control" required>
+                                <option value="" disabled selected>Seleccione un taller</option>
+                                {% for taller in talleres %}
+                                <option value="{{ taller.taller_id }}">{{ taller.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha">Fecha</label>
+                            <input type="date" id="fecha" name="fecha" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="comentario_bitacora">Comentario para la Bitácora</label>
+                            <textarea id="comentario_bitacora" name="comentario_bitacora" class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Crear Clase</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crear Múltiples Clases -->
+        <div class="tab-pane fade" id="multiple" role="tabpanel" aria-labelledby="multiple-tab">
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Crear Múltiples Clases</h5>
+                    <form action="{{ url_for('admin.clases_admin.clases_admin_create_multiple') }}" method="POST">
+                        <div class="form-group">
+                            <label for="taller_id_multiple">Taller</label>
+                            <select id="taller_id_multiple" name="taller_id" class="form-control" required>
+                                <option value="" disabled selected>Seleccione un taller</option>
+                                {% for taller in talleres %}
+                                <option value="{{ taller.taller_id }}">{{ taller.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha_inicio">Fecha de Inicio</label>
+                            <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha_fin">Fecha de Fin</label>
+                            <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dia_semana">Día de la Semana</label>
+                            <select id="dia_semana" name="dia_semana" class="form-control" required>
+                                <option value="" disabled selected>Seleccione un día</option>
+                                <option value="Lunes">Lunes</option>
+                                <option value="Martes">Martes</option>
+                                <option value="Miércoles">Miércoles</option>
+                                <option value="Jueves">Jueves</option>
+                                <option value="Viernes">Viernes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="comentario_bitacora_multiple">Comentario para la Bitácora</label>
+                            <textarea id="comentario_bitacora_multiple" name="comentario_bitacora" class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Crear Múltiples Clases</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Listado de clases existentes por taller en acordeón -->
+    <div class="accordion mt-5" id="accordionTalleres">
+        {% for taller in talleres %}
+        <div class="card">
+            <div class="card-header" id="heading{{ taller.taller_id }}">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ taller.taller_id }}" aria-expanded="true" aria-controls="collapse{{ taller.taller_id }}">
+                        {{ taller.nombre }} - Total de Clases: {{ taller.clases|length }}, Clases con Bitácora: {{ taller.clases|selectattr('comentario_bitacora')|list|length }}
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapse{{ taller.taller_id }}" class="collapse" aria-labelledby="heading{{ taller.taller_id }}" data-parent="#accordionTalleres">
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Comentario Bitácora</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for clase in taller.clases %}
+                            <tr>
+                                <td>{{ clase.fecha.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ clase.comentario_bitacora }}</td>
+                                <td>
+                                    <!-- Botón para abrir el modal de edición -->
+                                    <button class="btn btn-primary" data-toggle="modal" data-target="#editClaseModal{{ clase.id_clase }}">Editar</button>
+
+                                    <!-- Modal de edición -->
+                                    <div class="modal fade" id="editClaseModal{{ clase.id_clase }}" tabindex="-1" role="dialog" aria-labelledby="editClaseModalLabel{{ clase.id_clase }}" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editClaseModalLabel{{ clase.id_clase }}">Editar Clase</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form action="{{ url_for('admin.clases_admin.clases_admin_edit', id_clase=clase.id_clase) }}" method="POST">
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="fecha">Fecha</label>
+                                                            <input type="date" class="form-control" id="fecha" name="fecha" value="{{ clase.fecha }}" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="comentario_bitacora">Comentario</label>
+                                                            <textarea class="form-control" id="comentario_bitacora" name="comentario_bitacora">{{ clase.comentario_bitacora }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

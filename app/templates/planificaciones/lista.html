@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Anual ACLE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .planificacion-container {
+            margin-top: 30px;
+        }
+        .planificacion-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar .mes-item {
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar .mes-item:hover {
+            background-color: #495057;
+        }
+        .mes-container {
+            display: none;
+            margin-left: 270px;
+        }
+        .active-mes {
+            display: block;
+        }
+        .estado {
+            font-size: 0.85em;
+            padding: 2px 5px;
+            border-radius: 5px;
+        }
+        .estado.no-realizado {
+            background-color: #dc3545;
+            color: white;
+        }
+        .estado.en-desarrollo {
+            background-color: #ffc107;
+            color: black;
+        }
+        .estado.planificada {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">ACLE Gestión</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Planificaciones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Perfil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar con la lista de meses -->
+    <div class="sidebar">
+        {% for mes, estado in estados.items() %}
+        <div class="mes-item" onclick="showMes('{{ mes|lower }}')">
+            Mes de {{ mes }}
+            <span class="estado {% if estado == 'No realizado' %}no-realizado{% elif estado == 'En desarrollo' %}en-desarrollo{% else %}planificada{% endif %}">
+                {{ estado }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="container planificacion-container">
+        <div class="planificacion-header">
+            <h2>Planificación Anual ACLE</h2>
+            <div class="mb-3">
+                <label for="taller" class="form-label">Taller</label>
+                <select class="form-select" id="taller" name="taller">
+                    {% for taller in talleres %}
+                    <option value="{{ taller.taller_id }}">{{ taller.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <p>Responsable: <span id="docente-nombre">{{ current_user.nombre }} {{ current_user.apellido_paterno }}</span></p>
+            <div class="mb-3">
+                <label for="objetivo_general" class="form-label">Objetivo General</label>
+                <textarea class="form-control" id="objetivo_general" name="objetivo_general" rows="3"></textarea>
+            </div>
+        </div>
+
+        <!-- Contenedores de Planificación Mensual -->
+        {% for mes in meses %}
+        <div id="mes-{{ mes|lower }}" class="mes-container {% if loop.first %}active-mes{% endif %}">
+            <h4>Planificación para el Mes de {{ mes }}</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="habilidades-{{ mes|lower }}" class="form-label">Habilidades</label>
+                    <textarea class="form-control" id="habilidades-{{ mes|lower }}" name="habilidades_{{ mes|lower }}" rows="6">
+                        {{ planificaciones[mes]['habilidades'] if mes in planificaciones else '' }}
+                    </textarea>
+                </div>
+                <div class="col-md-3">
+                    <label for="recursos-{{ mes|lower }}" class="form-label">Recursos</label>
+                    <textarea class="form-control" id="recursos-{{ mes|lower }}" name="recursos_{{ mes|lower }}" rows="6">
+                        {{ planificaciones[mes]['recursos'] if mes in planificaciones else '' }}
+                    </textarea>
+                </div>
+                <div class="col-md-6">
+                    <label for="actividades-{{ mes|lower }}" class="form-label">Descripción de las Actividades del Mes</label>
+                    <textarea class="form-control" id="actividades-{{ mes|lower }}" name="actividades_{{ mes|lower }}" rows="6">
+                        {{ planificaciones[mes]['actividades'] if mes in planificaciones else '' }}
+                    </textarea>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary mt-4">Guardar Planificación</button>
+    </div>
+
+    <script>
+        // Función para mostrar el mes seleccionado y ocultar los demás
+        function showMes(mes) {
+            const meses = document.querySelectorAll('.mes-container');
+            meses.forEach(function(mesElement) {
+                mesElement.classList.remove('active-mes');
+            });
+            document.getElementById('mes-' + mes).classList.add('active-mes');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

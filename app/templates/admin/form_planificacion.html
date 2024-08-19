@@ -1,0 +1,50 @@
+<div class="modal fade" id="{% block modal_id %}{% endblock %}" tabindex="-1" role="dialog" aria-labelledby="{% block modal_id %}Label{% endblock %}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST" action="{% block form_action %}{% endblock %}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="{% block modal_id %}Label{% endblock %}">{% block form_title %}{% endblock %}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="{% block modal_id %}_taller_id">Taller</label>
+                        <select class="form-control" id="{% block modal_id %}_taller_id" name="taller_id" required>
+                            <option value="" disabled selected>Selecciona un taller</option>
+                            {% for taller in talleres %}
+                            <option value="{{ taller.id }}">{{ taller.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="{% block modal_id %}_mes">Mes</label>
+                        <select class="form-control" id="{% block modal_id %}_mes" name="mes" required>
+                            <option value="" disabled selected>Selecciona un mes</option>
+                            <option value="marzo">Marzo</option>
+                            <option value="abril">Abril</option>
+                            <option value="mayo">Mayo</option>
+                            <option value="junio">Junio</option>
+                            <option value="julio">Julio</option>
+                            <option value="agosto">Agosto</option>
+                            <option value="septiembre">Septiembre</option>
+                            <option value="octubre">Octubre</option>
+                            <option value="noviembre">Noviembre</option>
+                            <option value="diciembre">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="{% block modal_id %}_habilidades">Habilidades</label>
+                        <input type="text" class="form-control" id="{% block modal_id %}_habilidades" name="habilidades" required>
+                    </div>
+                    <!-- Resto del formulario -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Planificación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

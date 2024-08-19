@@ -1,0 +1,27 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Tomar Asistencia{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Tomar Asistencia para {{ clase.taller.nombre }} - {{ clase.fecha.strftime('%d-%m-%Y') }}</h1>
+    <form method="POST">
+        <div class="form-group">
+            {% for estudiante in estudiantes %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="presencia_{{ estudiante.id_estudiante }}" name="presencia_{{ estudiante.id_estudiante }}" {% if asistencias.get(estudiante.id_estudiante) and asistencias[estudiante.id_estudiante].presencia %}checked{% endif %}>
+                <label class="form-check-label" for="presencia_{{ estudiante.id_estudiante }}">
+                    {{ estudiante.nombre }}
+                </label>
+                <input type="text" class="form-control mt-2" name="justificacion_{{ estudiante.id_estudiante }}" placeholder="Justificación" value="{{ asistencias.get(estudiante.id_estudiante).justificacion if asistencias.get(estudiante.id_estudiante) else '' }}">
+            </div>
+            {% endfor %}
+        </div>
+        <div class="form-group mt-4">
+            <label for="comentario_bitacora">Comentario de Bitácora:</label>
+            <textarea class="form-control" id="comentario_bitacora" name="comentario_bitacora">{{ clase.comentario_bitacora }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Guardar Asistencia</button>
+    </form>
+</div>
+{% endblock %}

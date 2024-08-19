@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Workshops{% endblock %}
+
+{% block content %}
+<h2>Lista de Talleres</h2>
+<ul id="workshop-list">
+    {% for workshop in workshops %}
+    <li>
+        <a href="{{ url_for('admin.workshop_detail', workshop_id=workshop.id) }}">
+            {{ workshop.title }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

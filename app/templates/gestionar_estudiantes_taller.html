@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Estudiantes en Talleres</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Gestión de Estudiantes en Talleres</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="alert alert-dismissible fade show">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('admin.estudiantes_taller_admin.estudiantes_taller_admin_gestionar') }}" method="POST" id="form-asignacion">
+            <div class="form-group">
+                <label for="taller_id">Selecciona un Taller</label>
+                <select id="taller_id" name="taller_id" class="form-control" required>
+                    {% for taller in talleres %}
+                    <option value="{{ taller.taller_id }}" data-horario="{{ taller.horario }}">{{ taller.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="lista_estudiantes">Estudiantes</label>
+                    <input type="text" id="buscar_estudiantes" class="form-control mb-3" placeholder="Buscar estudiante...">
+                    <select id="lista_estudiantes" class="form-control" multiple size="10">
+                        {% for estudiante in estudiantes %}
+                        <option value="{{ estudiante.id_estudiante }}" data-horarios="{{ estudiante.horarios }}">
+                            {{ estudiante.nombre }} {{ estudiante.apellido_paterno }} - {{ estudiante.curso }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="estudiantes_seleccionados">Estudiantes Seleccionados</label>
+                    <input type="text" id="buscar_seleccionados" class="form-control mb-3" placeholder="Buscar estudiante seleccionado...">
+                    <select id="estudiantes_seleccionados" name="id_estudiantes[]" class="form-control" multiple size="10"></select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Asignar Estudiantes al Taller</button>
+        </form>
+
+        <h2 class="mt-5">Estudiantes Inscritos por Taller</h2>
+        <div class="accordion" id="accordionTalleres">
+            {% for taller in talleres %}
+            <div class="card">
+                <div class="card-header" id="heading{{ taller.taller_id }}">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ taller.taller_id }}" aria-expanded="true" aria-controls="collapse{{ taller.taller_id }}">
+                            {{ taller.nombre }}
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="collapse{{ taller.taller_id }}" class="collapse" aria-labelledby="heading{{ taller.taller_id }}" data-parent="#accordionTalleres">
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for asignacion in asignaciones %}
+                            {% if asignacion.taller_id == taller.taller_id %}
+                            <li class="list-group-item">
+                                {{ asignacion.estudiante.nombre }} {{ asignacion.estudiante.apellido_paterno }} - {{ asignacion.estudiante.curso }}
+                                <form action="{{ url_for('admin.estudiantes_taller_admin.estudiantes_taller_admin_delete', id_taller_estudiante=asignacion.id_taller_estudiante) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta asignación?');">
+                                    <button type="submit" class="btn btn-danger btn-sm float-right">Eliminar</button>
+                                </form>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#buscar_estudiantes').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $('#lista_estudiantes option').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            $('#buscar_seleccionados').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $('#estudiantes_seleccionados option').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            $('#lista_estudiantes').on('dblclick', 'option', function() {
+                $('#estudiantes_seleccionados').append($(this).clone());
+                $(this).remove();
+            });
+
+            $('#estudiantes_seleccionados').on('dblclick', 'option', function() {
+                $('#lista_estudiantes').append($(this).clone());
+                $(this).remove();
+            });
+
+            $('#form-asignacion').on('submit', function(e) {
+                var tallerHorario = $('#taller_id option:selected').data('horario');
+                var estudiantesDuplicados = false;
+
+                $('#estudiantes_seleccionados option').each(function() {
+                    var estudianteHorarios = $(this).data('horarios');
+                    if (estudianteHorarios.includes(tallerHorario)) {
+                        alert('El estudiante "' + $(this).text() + '" ya está inscrito en un taller con el mismo horario.');
+                        estudiantesDuplicados = true;
+                    }
+                    $(this).prop('selected', true);
+                });
+
+                if (estudiantesDuplicados) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

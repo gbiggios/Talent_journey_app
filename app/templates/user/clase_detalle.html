@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de la Clase</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Detalle de la Clase</h1>
+        <h2>{{ clase.nombre }} - {{ clase.fecha }}</h2>
+        
+        <form action="{{ url_for('docente.clase_detalle', clase_id=clase.id_clase) }}" method="POST">
+            <h3>Asistencia</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Presente</th>
+                        <th>Justificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for estudiante in clase.taller.estudiantes_taller %}
+                    <tr>
+                        <td>{{ estudiante.estudiante.nombre }} {{ estudiante.estudiante.apellido_paterno }} {{ estudiante.estudiante.apellido_materno }}</td>
+                        <td>
+                            <input type="checkbox" name="presencia_{{ estudiante.id_estudiante }}" {% if asistencias.get(estudiante.id_estudiante) and asistencias[estudiante.id_estudiante].presencia %}checked{% endif %}>
+                        </td>
+                        <td>
+                            <input type="text" name="justificacion_{{ estudiante.id_estudiante }}" value="{{ asistencias.get(estudiante.id_estudiante) and asistencias[estudiante.id_estudiante].justificacion or '' }}" class="form-control">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <h3>Bitácora</h3>
+            <div class="form-group">
+                <label for="comentario_bitacora">Comentario de la Bitácora</label>
+                <textarea id="comentario_bitacora" name="comentario_bitacora" class="form-control">{{ clase.comentario_bitacora }}</textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        
+        <a href="{{ url_for('docente.dashboard') }}" class="btn btn-secondary mt-3">Volver al Dashboard</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

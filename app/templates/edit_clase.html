@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Clase</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Editar Clase</h1>
+        <form action="{{ url_for('clases.update_clase', id_clase=clase.id_clase) }}" method="post">
+            <div class="form-group">
+                <label for="taller_id">Taller</label>
+                <select class="form-control" id="taller_id" name="taller_id" required>
+                    {% for taller in talleres %}
+                    <option value="{{ taller.taller_id }}" {% if taller.taller_id == clase.taller_id %}selected{% endif %}>{{ taller.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" value="{{ clase.fecha }}" required>
+            </div>
+            <div class="form-group">
+                <label for="comentario_bitacora">Comentario Bitácora</label>
+                <textarea class="form-control" id="comentario_bitacora" name="comentario_bitacora">{{ clase.comentario_bitacora }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Docente</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Editar Docente</h1>
+        <form action="/docente/{{ docente.id_docente }}/edit" method="POST">
+            <div class="form-group">
+                <label for="rut_docente">RUT</label>
+                <input type="text" id="rut_docente" name="rut_docente" class="form-control" value="{{ docente.rut_docente }}" required>
+            </div>
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" class="form-control" value="{{ docente.nombre }}" required>
+            </div>
+            <div class="form-group">
+                <label for="apellido_paterno">Apellido Paterno</label>
+                <input type="text" id="apellido_paterno" name="apellido_paterno" class="form-control" value="{{ docente.apellido_paterno }}" required>
+            </div>
+            <div class="form-group">
+                <label for="apellido_materno">Apellido Materno</label>
+                <input type="text" id="apellido_materno" name="apellido_materno" class="form-control" value="{{ docente.apellido_materno }}" required>
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input type="text" id="telefono" name="telefono" class="form-control" value="{{ docente.telefono }}">
+            </div>
+            <div class="form-group">
+                <label for="correo">Correo</label>
+                <input type="email" id="correo" name="correo" class="form-control" value="{{ docente.correo }}">
+            </div>
+            <div class="form-group">
+                <label for="contraseña">Contraseña</label>
+                <input type="password" id="contraseña" name="contraseña" class="form-control" value="{{ docente.contraseña }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Actualizar Docente</button>
+            <a href="/docentes" class="btn btn-secondary ml-2">Volver</a>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

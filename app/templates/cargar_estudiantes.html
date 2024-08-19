@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Estudiantes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Cargar Estudiantes desde Excel</h1>
+        <form action="{{ url_for('cargar_estudiantes') }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="archivo">Archivo Excel</label>
+                <input type="file" class="form-control" id="archivo" name="archivo" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Cargar</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-info mt-3">
+                {{ messages[0] }}
+            </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

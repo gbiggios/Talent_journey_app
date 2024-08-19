@@ -1,0 +1,139 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Gestión de Perfiles</h1>
+    
+    <!-- Botón para abrir el modal de crear perfil -->
+    <button class="btn btn-success mb-4" data-toggle="modal" data-target="#crearPerfilModal">Crear Nuevo Perfil</button>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert alert-dismissible fade show">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Tabla de perfiles -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Es Administrador</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.id }}</td>
+                <td>{{ usuario.username }}</td>
+                <td>{{ 'Sí' if usuario.is_admin else 'No' }}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editarPerfilModal" 
+                            data-id="{{ usuario.id }}" 
+                            data-username="{{ usuario.username }}" 
+                            data-is_admin="{{ 'checked' if usuario.is_admin else '' }}">
+                        Editar
+                    </button>
+                    <form action="{{ url_for('admin.perfiles_admin.perfiles_admin_eliminar', user_id=usuario.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este perfil?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal para crear perfil -->
+<div class="modal fade" id="crearPerfilModal" tabindex="-1" role="dialog" aria-labelledby="crearPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{{ url_for('admin.perfiles_admin.perfiles_admin_crear') }}" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearPerfilModalLabel">Crear Nuevo Perfil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="username">Nombre de Usuario</label>
+                        <input type="text" id="username" name="username" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="is_admin" name="is_admin">
+                        <label class="form-check-label" for="is_admin">Es Administrador</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-success">Crear Perfil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar perfil -->
+<div class="modal fade" id="editarPerfilModal" tabindex="-1" role="dialog" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="editarPerfilForm" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarPerfilModalLabel">Editar Perfil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit_username">Nombre de Usuario</label>
+                        <input type="text" id="edit_username" name="username" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_password">Nueva Contraseña (dejar en blanco para no cambiar)</label>
+                        <input type="password" id="edit_password" name="password" class="form-control">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="edit_is_admin" name="is_admin">
+                        <label class="form-check-label" for="edit_is_admin">Es Administrador</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $('#editarPerfilModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var id = button.data('id');
+        var username = button.data('username');
+        var is_admin = button.data('is_admin');
+
+        var modal = $(this);
+        modal.find('#edit_username').val(username);
+        modal.find('#edit_is_admin').prop('checked', is_admin);
+        modal.find('#editarPerfilForm').attr('action', '{{ url_for("admin.perfiles_admin.perfiles_admin_editar", user_id=0) }}'.replace('0', id));
+    });
+</script>
+{% endblock %}

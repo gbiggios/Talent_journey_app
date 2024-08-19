@@ -1,0 +1,43 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<h2>{{ form_title }}</h2>
+
+<form method="POST" action="{{ form_action }}">
+    <div>
+        <label for="title">Título</label>
+        <input type="text" id="title" name="title" value="{{ plan.title }}" required>
+    </div>
+    <div>
+        <label for="description">Descripción</label>
+        <textarea id="description" name="description" required>{{ plan.description }}</textarea>
+    </div>
+    <div>
+        <label for="date">Fecha</label>
+        <input type="date" id="date" name="date" value="{{ plan.date }}" required>
+    </div>
+    <div>
+        <label for="time">Horario</label>
+        <input type="time" id="time" name="time" value="{{ plan.time }}" required>
+    </div>
+    <div>
+        <label for="teacher">Profesor</label>
+        <input type="text" id="teacher" name="teacher" value="{{ plan.teacher }}" required>
+    </div>
+    <div>
+        <label for="skills">Habilidades</label>
+        <textarea id="skills" name="skills" required>{{ plan.skills }}</textarea>
+    </div>
+    <div>
+        <label for="materials">Materiales</label>
+        <textarea id="materials" name="materials" required>{{ plan.materials }}</textarea>
+    </div>
+    <div>
+        <label for="activities">Actividades</label>
+        <textarea id="activities" name="activities" required>{{ plan.activities }}</textarea>
+    </div>
+    <button type="submit">{{ form_button_text }}</button>
+</form>
+{% endblock %}

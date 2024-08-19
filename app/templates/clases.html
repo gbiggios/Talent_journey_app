@@ -1,0 +1,59 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Administrar Salas</h1>
+    
+    <!-- Formulario para crear o editar una sala -->
+    <div class="card">
+        <div class="card-header">
+            {% if form.nombre_sala.data %}
+                Editar Sala
+            {% else %}
+                Crear Sala
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('salas_admin.salas_admin_editar', id_sala=sala.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.nombre_sala.label(class="form-label") }}
+                    {{ form.nombre_sala(class="form-control", placeholder="Nombre de la sala") }}
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Actualizar Sala</button>
+            </form>
+            
+            </form>
+        </div>
+    </div>
+
+    <!-- Listado de salas -->
+    <div class="mt-5">
+        <h2>Salas Existentes</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sala in salas %}
+                <tr>
+                    <td>{{ sala.id }}</td>
+                    <td>{{ sala.nombre_sala }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('salas_admin.salas_admin_eliminar', id_sala=sala.id) }}" style="display:inline;">
+                            {{ form.hidden_tag() }}
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                        <a href="{{ url_for('salas_admin.salas_admin_editar', id_sala=sala.id) }}" class="btn btn-secondary btn-sm">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Seleccionar Clase{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Seleccionar Clase para Tomar Asistencia</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="id_clase">Clase:</label>
+            <select id="id_clase" name="id_clase" class="form-control">
+                {% for clase in clases %}
+                <option value="{{ clase.id_clase }}">{{ clase.taller.nombre }} - {{ clase.fecha.strftime('%d-%m-%Y') }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Tomar Asistencia</button>
+    </form>
+</div>
+{% endblock %}

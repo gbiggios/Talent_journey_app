@@ -1,0 +1,34 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Historial de Asistencia para {{ taller.nombre }}</h1>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Estudiante</th>
+                {% for clase in clases %}
+                <th>{{ clase.fecha.strftime('%Y-%m-%d') }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for estudiante in estudiantes %}
+            <tr>
+                <td>{{ estudiante.nombre }} {{ estudiante.apellido_paterno }}</td>
+                {% for clase in clases %}
+                <td>
+                    {% if asistencia_dict[estudiante.id_estudiante][clase.id_clase] %}
+                    ✔️
+                    {% else %}
+                    ❌
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

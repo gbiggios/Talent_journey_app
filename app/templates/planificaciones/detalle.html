@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Planificación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Detalle de Planificación</h1>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>Taller:</strong> {{ planificacion.taller.nombre }}</li>
+            <li class="list-group-item"><strong>Mes:</strong> {{ planificacion.mes }}</li>
+            <li class="list-group-item"><strong>Habilidades:</strong> {{ planificacion.habilidades }}</li>
+            <li class="list-group-item"><strong>Recursos:</strong> {{ planificacion.recursos }}</li>
+            <li class="list-group-item"><strong>Actividades:</strong> {{ planificacion.actividades }}</li>
+        </ul>
+        <a href="{{ url_for('planificacion.editar_planificacion', id=planificacion.id_planificacion) }}" class="btn btn-warning mt-3">Editar</a>
+        <a href="{{ url_for('planificacion.listar_planificaciones') }}" class="btn btn-secondary mt-3">Volver a la lista</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

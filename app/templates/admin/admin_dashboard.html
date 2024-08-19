@@ -1,0 +1,129 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Card for Docentes -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x"></i>
+                    <h5 class="card-title mt-2">Gestión de Docentes</h5>
+                    <p class="card-text">Administra y gestiona los docentes de la institución.</p>
+                    <a href="{{ url_for('admin.docentes_admin.docentes_admin_home') }}" class="btn btn-custom">Ir a Gestión de Docentes</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card for Salas -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-chalkboard fa-3x"></i>
+                    <h5 class="card-title mt-2">Gestión de Salas</h5>
+                    <p class="card-text">Administra y organiza las salas de clases.</p>
+                    <a href="{{ url_for('admin.salas_admin.salas_admin_listar') }}" class="btn btn-custom">Ir a Gestión de Salas</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card for Talleres -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-briefcase fa-3x"></i>
+                    <h5 class="card-title mt-2">Gestión de Talleres</h5>
+                    <p class="card-text">Gestiona y organiza los talleres ofrecidos.</p>
+                    <a href="{{ url_for('admin.talleres_admin.talleres_admin_listar') }}" class="btn btn-custom">Ir a Gestión de Talleres</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Estudiantes -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-user-graduate fa-3x"></i>
+                    <h5 class="card-title mt-2">Gestión de Estudiantes</h5>
+                    <p class="card-text">Administra y gestiona la información de los estudiantes.</p>
+                    <a href="{{ url_for('admin.estudiantes_admin.estudiantes_admin_home') }}" class="btn btn-custom">Ir a Gestión de Estudiantes</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Estudiantes por Taller -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-user-friends fa-3x"></i>
+                    <h5 class="card-title mt-2">Estudiantes por Taller</h5>
+                    <p class="card-text">Gestiona la asignación de estudiantes a los talleres.</p>
+                    <a href="{{ url_for('admin.estudiantes_taller_admin.estudiantes_taller_admin_gestionar') }}" class="btn btn-custom">Ir a Estudiantes por Taller</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Clases -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-book fa-3x"></i>
+                    <h5 class="card-title mt-2">Gestión de Clases</h5>
+                    <p class="card-text">Administra la programación y contenidos de las clases.</p>
+                    <a href="{{ url_for('admin.clases_admin.clases_admin_home') }}" class="btn btn-custom">Ir a Gestión de Clases</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Historial de Asistencia -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-alt fa-3x"></i>
+                    <h5 class="card-title mt-2">Historial de Asistencia</h5>
+                    <p class="card-text">Consulta y gestiona el historial de asistencia.</p>
+                    <a href="{{ url_for('admin.historial_admin.seleccionar_taller') }}" class="btn btn-custom">Ir a Historial de Asistencia</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Perfiles -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-user-cog fa-3x"></i>
+                    <h5 class="card-title mt-2">Gestión de Perfiles</h5>
+                    <p class="card-text">Administra los perfiles de los usuarios.</p>
+                    <a href="{{ url_for('admin.perfiles_admin.perfiles_admin_listar') }}" class="btn btn-custom">Ir a Gestión de Perfiles</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Planificaciones -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-alt fa-3x"></i>
+                    <h5 class="card-title mt-2">Gestión de Planificaciones</h5>
+                    <p class="card-text">Gestiona las planificaciones académicas.</p>
+                    <a href="{{ url_for('admin.planificacion_admin.listar_planificaciones_admin') }}" class="btn btn-custom">Ir a Gestión de Planificaciones</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Asistencias -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-check fa-3x"></i>
+                    <h5 class="card-title mt-2">Gestión de Asistencias</h5>
+                    <p class="card-text">Administra las asistencias de los estudiantes.</p>
+                    <a href="{{ url_for('admin.asistencias_admin.asistencia_dashboard') }}" class="btn btn-custom">Ir a Gestión de Asistencias</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

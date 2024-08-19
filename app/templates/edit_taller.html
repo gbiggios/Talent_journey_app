@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Taller</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Editar Taller</h1>
+        <form action="{{ url_for('talleres.update_taller', taller_id=taller.taller_id) }}" method="POST">
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" class="form-control" value="{{ taller.nombre }}" required>
+            </div>
+            <div class="form-group">
+                <label for="horario">Horario</label>
+                <input type="text" id="horario" name="horario" class="form-control" value="{{ taller.horario }}" required>
+            </div>
+            <div class="form-group">
+                <label for="id_sala">Sala</label>
+                <select id="id_sala" name="id_sala" class="form-control" required>
+                    {% for sala in salas %}
+                    <option value="{{ sala.id_sala }}" {% if sala.id_sala == taller.id_sala %}selected{% endif %}>{{ sala.nombre_sala }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_docente">Docente</label>
+                <select id="id_docente" name="id_docente" class="form-control" required>
+                    {% for docente in docentes %}
+                    <option value="{{ docente.id_docente }}" {% if docente.id_docente == taller.id_docente %}selected{% endif %}>{{ docente.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Actualizar Taller</button>
+            <a href="{{ url_for('talleres.talleres') }}" class="btn btn-secondary ml-2">Volver</a>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

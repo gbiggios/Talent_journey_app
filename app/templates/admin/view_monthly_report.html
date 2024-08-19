@@ -1,0 +1,56 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Reporte Mensual de Asistencias{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Generar Reporte Mensual de Asistencias</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="start_date">Fecha de Inicio:</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" required>
+        </div>
+        <div class="form-group mt-3">
+            <label for="end_date">Fecha de Fin:</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" required>
+        </div>
+        <div class="form-group mt-3">
+            <label for="taller_id">Taller:</label>
+            <select id="taller_id" name="taller_id" class="form-control">
+                {% for taller in talleres %}
+                <option value="{{ taller.taller_id }}">{{ taller.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Ver Reporte</button>
+    </form>
+
+    {% if monthly_data %}
+    <h2 class="mt-5">Reporte de {{ start_date }} a {{ end_date }}</h2>
+    {% for mes, data in monthly_data.items() %}
+    <h3>{{ mes }}</h3>
+    <p>Porcentaje de Asistencia: {{ data.porcentaje_asistencia | round(2) }}%</p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Presentes</th>
+                <th>Ausentes</th>
+                <th>Comentario de Bitácora</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for clase in data.clases %}
+            <tr>
+                <td>{{ clase.fecha.strftime('%d-%m-%Y') }}</td>
+                <td>{{ clase.presentes }}</td>
+                <td>{{ clase.ausentes }}</td>
+                <td>{{ clase.comentario_bitacora }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de Asistencia</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Detalles de Asistencia</h1>
+        <h2>{{ clase.taller.nombre }} - {{ clase.fecha }}</h2>
+        <h3>Estudiantes Presentes</h3>
+        <ul>
+            {% for estudiante in estudiantes_presentes %}
+            <li>{{ estudiante.nombre }} {{ estudiante.apellido_paterno }} {{ estudiante.apellido_materno }} ({{ estudiante.rut_estudiante }})</li>
+            {% endfor %}
+        </ul>
+        <h3>Estudiantes Ausentes</h3>
+        <ul>
+            {% for estudiante in estudiantes_ausentes %}
+            <li>{{ estudiante.nombre }} {{ estudiante.apellido_paterno }} {{ estudiante.apellido_materno }} ({{ estudiante.rut_estudiante }})</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('asistencias.attendance_report') }}" class="btn btn-secondary">Volver</a>
+    </div>
+</body>
+</html>

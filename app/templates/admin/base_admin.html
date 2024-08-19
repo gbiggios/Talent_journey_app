@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            background-color: #f7d6e0;
+            min-height: 100vh;
+            padding-top: 1rem;
+            position: fixed;
+            width: 250px;
+            transition: all 0.3s;
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar a {
+            color: #333;
+            font-weight: bold;
+            padding: 10px 15px;
+            display: block;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #ffebef;
+            text-decoration: none;
+        }
+        .sidebar .active {
+            background-color: #ddc3c8;
+        }
+        .sidebar.collapsed a {
+            text-align: center;
+            padding: 10px 5px;
+        }
+        .sidebar.collapsed a span {
+            display: none;
+        }
+        .sidebar.collapsed a i {
+            margin-right: 0;
+        }
+        .content {
+            margin-left: 260px; /* Adjusted for sidebar width */
+            background-color: #e8f0fe;
+            padding: 2rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .content.expanded {
+            margin-left: 80px;
+        }
+        .btn-custom {
+            background-color: #f7d6e0;
+            color: #333;
+            font-weight: bold;
+        }
+        .btn-custom:hover {
+            background-color: #f9bfc7;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('admin.dashboard') }}" class="active"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a href="{{ url_for('admin.docentes_admin.docentes_admin_home') }}"><i class="fas fa-users"></i> <span>Gestión de Docentes</span></a>
+        <a href="{{ url_for('admin.salas_admin.salas_admin_listar') }}"><i class="fas fa-chalkboard"></i> <span>Gestión de Salas</span></a>
+        <a href="{{ url_for('admin.talleres_admin.talleres_admin_listar') }}"><i class="fas fa-briefcase"></i> <span>Gestión de Talleres</span></a>
+        <a href="{{ url_for('admin.estudiantes_admin.estudiantes_admin_home') }}"><i class="fas fa-user-graduate"></i> <span>Gestión de Estudiantes</span></a>
+        <a href="{{ url_for('admin.estudiantes_taller_admin.estudiantes_taller_admin_gestionar') }}"><i class="fas fa-user-friends"></i> <span>Estudiantes por Taller</span></a>
+        <a href="{{ url_for('admin.clases_admin.clases_admin_home') }}"><i class="fas fa-book"></i> <span>Gestión de Clases</span></a>
+        <a href="{{ url_for('admin.historial_admin.seleccionar_taller') }}"><i class="fas fa-calendar-alt"></i> <span>Historial de Asistencia</span></a>
+        <a href="{{ url_for('admin.perfiles_admin.perfiles_admin_listar') }}"><i class="fas fa-user-cog"></i> <span>Gestión de Perfiles</span></a>
+        <a href="{{ url_for('admin.planificacion_admin.listar_planificaciones_admin') }}"><i class="fas fa-calendar-alt"></i> <span>Gestión de Planificaciones</span></a>
+        <a href="{{ url_for('admin.asistencias_admin.asistencia_dashboard') }}"><i class="fas fa-calendar-check"></i> <span>Gestión de Asistencias</span></a>
+    </div>
+
+    <div class="container mt-5 content" id="mainContent">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle the sidebar
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('collapsed');
+            $('#mainContent').toggleClass('expanded');
+        });
+    </script>
+</body>
+</html>
