@@ -20,11 +20,12 @@
     {% endwith %}
 
     <form action="{{ url_for('admin.estudiantes_taller_admin.estudiantes_taller_admin_gestionar') }}" method="POST" id="form-asignacion">
+        {{ form.hidden_tag() }} <!-- Token CSRF -->
         <div class="form-group">
             <label for="taller_id">Selecciona un Taller</label>
             <select id="taller_id" name="taller_id" class="form-control" required>
                 {% for taller in talleres %}
-                <option value="{{ taller.taller_id }}" data-horario="{{ taller.horario }}">{{ taller.nombre }}</option>
+                <option value="{{ taller.taller_id }}">{{ taller.nombre }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -33,9 +34,9 @@
             <div class="col-md-6">
                 <label for="lista_estudiantes">Estudiantes</label>
                 <input type="text" id="buscar_estudiantes" class="form-control mb-3" placeholder="Buscar estudiante...">
-                <select id="lista_estudiantes" class="form-control" multiple size="10">
+                <select id="lista_estudiantes" name="id_estudiantes[]" class="form-control" multiple size="10">
                     {% for estudiante in estudiantes %}
-                    <option value="{{ estudiante.id_estudiante }}" data-horarios="{{ estudiante.horarios }}">
+                    <option value="{{ estudiante.id_estudiante }}">
                         {{ estudiante.nombre }} {{ estudiante.apellido_paterno }} - {{ estudiante.curso }}
                     </option>
                     {% endfor %}
@@ -45,7 +46,7 @@
             <div class="col-md-6">
                 <label for="estudiantes_seleccionados">Estudiantes Seleccionados</label>
                 <input type="text" id="buscar_seleccionados" class="form-control mb-3" placeholder="Buscar estudiante seleccionado...">
-                <select id="estudiantes_seleccionados" name="id_estudiantes[]" class="form-control" multiple size="10"></select>
+                <select id="estudiantes_seleccionados" class="form-control" multiple size="10"></select>
             </div>
         </div>
 
@@ -53,32 +54,19 @@
     </form>
 
     <h2 class="mt-5">Estudiantes Inscritos por Taller</h2>
-    <div class="accordion" id="accordionTalleres">
+    <ul class="nav nav-tabs" id="talleresTab" role="tablist">
         {% for taller in talleres %}
-        <div class="card">
-            <div class="card-header" id="heading{{ taller.taller_id }}">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ taller.taller_id }}" aria-expanded="true" aria-controls="collapse{{ taller.taller_id }}">
-                        {{ taller.nombre }}
-                    </button>
-                </h2>
-            </div>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-{{ taller.taller_id }}-tab" data-toggle="tab" href="#tab-{{ taller.taller_id }}" role="tab" aria-controls="tab-{{ taller.taller_id }}" aria-selected="false">{{ taller.nombre }}</a>
+        </li>
+        {% endfor %}
+    </ul>
 
-            <div id="collapse{{ taller.taller_id }}" class="collapse" aria-labelledby="heading{{ taller.taller_id }}" data-parent="#accordionTalleres">
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for asignacion in asignaciones %}
-                        {% if asignacion.taller_id == taller.taller_id %}
-                        <li class="list-group-item">
-                            {{ asignacion.estudiante.nombre }} {{ asignacion.estudiante.apellido_paterno }} - {{ asignacion.estudiante.curso }}
-                            <form action="{{ url_for('admin.estudiantes_taller_admin.estudiantes_taller_admin_delete', id_taller_estudiante=asignacion.id_taller_estudiante) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta asignación?');">
-                                <button type="submit" class="btn btn-danger btn-sm float-right">Eliminar</button>
-                            </form>
-                        </li>
-                        {% endif %}
-                        {% endfor %}
-                    </ul>
-                </div>
+    <div class="tab-content" id="talleresTabContent">
+        {% for taller in talleres %}
+        <div class="tab-pane fade" id="tab-{{ taller.taller_id }}" role="tabpanel" aria-labelledby="tab-{{ taller.taller_id }}-tab">
+            <div id="estudiantes-container-{{ taller.taller_id }}">
+                <!-- Los estudiantes se cargarán aquí -->
             </div>
         </div>
         {% endfor %}
@@ -111,22 +99,18 @@
             $(this).remove();
         });
 
-        $('#form-asignacion').on('submit', function(e) {
-            var tallerHorario = $('#taller_id option:selected').data('horario');
-            var estudiantesDuplicados = false;
+        // Cargar estudiantes asignados dinámicamente al cambiar de tab
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            var target = $(e.target).attr("href");
+            var tallerId = target.split('-')[1];
 
-            $('#estudiantes_seleccionados option').each(function() {
-                var estudianteHorarios = $(this).data('horarios');
-                if (estudianteHorarios.includes(tallerHorario)) {
-                    alert('El estudiante "' + $(this).text() + '" ya está inscrito en un taller con el mismo horario.');
-                    estudiantesDuplicados = true;
+            // Llamada AJAX para cargar los estudiantes asignados
+            $.ajax({
+                url: "{{ url_for('admin.estudiantes_taller_admin.load_students', taller_id=0) }}".replace('0', tallerId),
+                success: function(data) {
+                    $('#estudiantes-container-' + tallerId).html(data);
                 }
-                $(this).prop('selected', true);
             });
-
-            if (estudiantesDuplicados) {
-                e.preventDefault();
-            }
         });
     });
 </script>

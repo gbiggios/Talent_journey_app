@@ -3,6 +3,7 @@ from ...extensions import db
 from ...models import Planificacion, Taller
 from flask_login import current_user, login_required
 from app.routes.admin.decorators import admin_required
+from app.forms import PlanificacionForm
 
 # Crear el Blueprint para las rutas de Planificación
 planificacion_bp = Blueprint('planificacion_admin', __name__)
@@ -13,6 +14,7 @@ planificacion_bp = Blueprint('planificacion_admin', __name__)
 @admin_required
 def listar_planificaciones_admin():
     talleres = Taller.query.all()
+    form= PlanificacionForm()
 
     if not talleres:
         flash('No hay talleres disponibles.')
@@ -41,7 +43,8 @@ def listar_planificaciones_admin():
         taller_seleccionado=taller_seleccionado,
         planificaciones=planificaciones,
         siguiente_mes=siguiente_mes,
-        puede_crear=puede_crear
+        puede_crear=puede_crear,
+        form=form
     )
 
 # Ruta para seleccionar un taller específico
@@ -51,6 +54,7 @@ def listar_planificaciones_admin():
 def listar_planificaciones_taller(taller_id):
     taller_seleccionado = Taller.query.get_or_404(taller_id)
     talleres = Taller.query.all()
+    form= PlanificacionForm()
     planificaciones = {
         planificacion.mes: planificacion for planificacion in Planificacion.query.filter_by(taller_id=taller_seleccionado.taller_id).all()
     }
@@ -72,7 +76,7 @@ def listar_planificaciones_taller(taller_id):
         taller_seleccionado=taller_seleccionado,
         planificaciones=planificaciones,
         siguiente_mes=siguiente_mes,
-        puede_crear=puede_crear
+        puede_crear=puede_crear, form=form
     )
 
 # Ruta para crear una nueva planificación (solo admin)
@@ -81,6 +85,7 @@ def listar_planificaciones_taller(taller_id):
 @admin_required
 def crear_planificacion_admin():
     taller_id = request.form['taller_id']
+    form= PlanificacionForm()
     
     # Validar que se haya seleccionado un taller válido
     if not taller_id or not taller_id.isdigit() or not Taller.query.get(taller_id):
@@ -99,7 +104,7 @@ def crear_planificacion_admin():
     db.session.commit()
     flash('Planificación creada exitosamente')
 
-    return redirect(url_for('admin.planificacion_admin.listar_planificaciones_taller', taller_id=taller_id))
+    return redirect(url_for('admin.planificacion_admin.listar_planificaciones_taller', taller_id=taller_id,form=form))
 
 # Ruta para editar una planificación existente (solo admin)
 @planificacion_bp.route('/editar', methods=['POST'], endpoint='editar_planificacion_admin')
@@ -107,6 +112,8 @@ def crear_planificacion_admin():
 @admin_required
 def editar_planificacion_admin():
     planificacion = Planificacion.query.get_or_404(request.form['id'])
+
+    form= PlanificacionForm()
 
     taller_id = request.form['taller_id']
     
@@ -124,7 +131,7 @@ def editar_planificacion_admin():
     db.session.commit()
     flash('Planificación actualizada exitosamente')
 
-    return redirect(url_for('admin.planificacion_admin.listar_planificaciones_taller', taller_id=taller_id))
+    return redirect(url_for('admin.planificacion_admin.listar_planificaciones_taller', taller_id=taller_id, form=form))
 
 # Ruta para eliminar una planificación (solo admin)
 @planificacion_bp.route('/eliminar', methods=['POST'], endpoint='eliminar_planificacion_admin')
@@ -138,6 +145,8 @@ def eliminar_planificacion_admin():
     flash('Planificación eliminada exitosamente')
 
     return redirect(url_for('admin.planificacion_admin.listar_planificaciones_taller', taller_id=taller_id))
+
+
 
 # Ruta para actualizar el objetivo general de un taller (solo admin)
 @planificacion_bp.route('/actualizar_objetivo_general', methods=['POST'], endpoint='actualizar_objetivo_general')

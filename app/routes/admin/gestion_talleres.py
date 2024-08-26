@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, render_template, request, redirect, url_for
+from flask import Blueprint, jsonify, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from app.models import Taller, Sala, DOCENTE, EstudianteTaller
 from app.extensions import db
-from app.routes.admin.decorators import admin_required  # Asegúrate de que esto esté bien importado
+from app.routes.admin.decorators import admin_required
+from app.forms import TallerForm
 
 talleres_bp = Blueprint('talleres_admin', __name__)
 
@@ -13,62 +14,64 @@ def talleres():
     talleres = Taller.query.all()
     salas = Sala.query.all()
     docentes = DOCENTE.query.all()
-    return render_template('admin/talleres.html', talleres=talleres, salas=salas, docentes=docentes)
+    form = TallerForm()
+    return render_template('admin/talleres.html', talleres=talleres, salas=salas, docentes=docentes, form=form)
+
 
 @talleres_bp.route('/create', methods=['POST'], endpoint='talleres_admin_crear')
 @login_required
-@admin_required  # Aplica la protección de admin
+@admin_required
 def create_taller():
-    nombre = request.form['nombre']
-    horario = request.form['horario']
-    id_sala = request.form['id_sala']
-    id_docente = request.form['id_docente']
+    form = TallerForm()
+    form.id_sala.choices = [(sala.id_sala, sala.nombre_sala) for sala in Sala.query.all()]
+    form.id_docente.choices = [(docente.id_docente, f"{docente.nombre} {docente.apellido_paterno}") for docente in DOCENTE.query.all()]
     
-    nuevo_taller = Taller(
-        nombre=nombre,
-        horario=horario,
-        id_sala=id_sala,
-        id_docente=id_docente
-    )
-    
-    db.session.add(nuevo_taller)
-    db.session.commit()
-    return redirect(url_for('talleres_admin.talleres_admin_listar'))
+    if form.validate_on_submit():
+        nuevo_taller = Taller(
+            nombre=form.nombre.data,
+            horario=form.horario.data,
+            id_sala=form.id_sala.data,
+            id_docente=form.id_docente.data
+        )
+        db.session.add(nuevo_taller)
+        db.session.commit()
+        flash('Taller creado exitosamente.', 'success')
+        return redirect(url_for('admin.talleres_admin.talleres_admin_listar'))
+
+    # Si el formulario no es válido, renderizar la misma página con errores
+    talleres = Taller.query.all()
+    return render_template('admin/talleres.html', talleres=talleres, form=form)
 
 @talleres_bp.route('/<int:taller_id>/delete', methods=['POST'], endpoint='talleres_admin_eliminar')
 @login_required
-@admin_required  # Aplica la protección de admin
+@admin_required
 def delete_taller(taller_id):
     taller = Taller.query.get_or_404(taller_id)
     db.session.delete(taller)
     db.session.commit()
-    return redirect(url_for('talleres_admin.talleres_admin_listar'))
+    flash('Taller eliminado exitosamente.', 'success')
+    return redirect(url_for('admin.talleres_admin.talleres_admin_listar'))
 
-@talleres_bp.route('/<int:taller_id>/edit', methods=['GET'], endpoint='talleres_admin_editar_get')
+@talleres_bp.route('/<int:taller_id>/edit', methods=['GET', 'POST'], endpoint='talleres_admin_editar')
 @login_required
-@admin_required  # Aplica la protección de admin
-def edit_taller(taller_id):
-    taller = Taller.query.get_or_404(taller_id)
-    salas = Sala.query.all()
-    docentes = DOCENTE.query.all()
-    return render_template('admin/edit_taller.html', taller=taller, salas=salas, docentes=docentes)
-
-@talleres_bp.route('/<int:taller_id>/edit', methods=['POST'], endpoint='talleres_admin_editar_post')
-@login_required
-@admin_required  # Aplica la protección de admin
+@admin_required
 def update_taller(taller_id):
     taller = Taller.query.get_or_404(taller_id)
-    taller.nombre = request.form['nombre']
-    taller.horario = request.form['horario']
-    taller.id_sala = request.form['id_sala']
-    taller.id_docente = request.form['id_docente']
-    
-    db.session.commit()
-    return redirect(url_for('talleres_admin.talleres_admin_listar'))
+    form = TallerForm(obj=taller)
+    form.id_sala.choices = [(sala.id_sala, sala.nombre_sala) for sala in Sala.query.all()]
+    form.id_docente.choices = [(docente.id_docente, f"{docente.nombre} {docente.apellido_paterno}") for docente in DOCENTE.query.all()]
+
+    if form.validate_on_submit():
+        form.populate_obj(taller)
+        db.session.commit()
+        flash('Taller actualizado exitosamente.', 'success')
+        return redirect(url_for('admin.talleres_admin.talleres_admin_listar'))
+
+    return render_template('admin/edit_taller.html', form=form)
 
 @talleres_bp.route('/listado', methods=['GET'], endpoint='talleres_admin_listado')
 @login_required
-@admin_required  # Aplica la protección de admin
+@admin_required
 def listado_talleres():
     talleres = Taller.query.all()
     
@@ -80,7 +83,7 @@ def listado_talleres():
 
 @talleres_bp.route('/detalle', methods=['GET'], endpoint='detalle_taller')
 @login_required
-@admin_required  # Aplica la protección de admin
+@admin_required
 def detalle_taller():
     taller_id = request.args.get('taller_id')
     asignaciones = EstudianteTaller.query.filter_by(taller_id=taller_id).all()

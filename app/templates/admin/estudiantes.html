@@ -20,6 +20,7 @@
     <!-- Formulario para agregar estudiantes -->
     <h2>Agregar Estudiante</h2>
     <form action="{{ url_for('admin.estudiantes_admin.estudiantes_admin_create') }}" method="POST" class="mb-5">
+        {{ form.hidden_tag() }} <!-- Token CSRF -->
         <div class="form-group">
             <label for="rut_estudiante">RUT del Estudiante</label>
             <input type="text" id="rut_estudiante" name="rut_estudiante" class="form-control" required>
@@ -74,6 +75,7 @@
                 <td>{{ estudiante.correo_institucional }}</td>
                 <td>
                     <form action="{{ url_for('admin.estudiantes_admin.estudiantes_admin_delete', id_estudiante=estudiante.id_estudiante) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a este estudiante?');">
+                        {{ form.hidden_tag() }} <!-- Token CSRF -->
                         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                     </form>
                     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editEstudianteModal" 
@@ -97,6 +99,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="editEstudianteForm" method="POST">
+                    {{ form.hidden_tag() }} <!-- Token CSRF -->
                     <div class="modal-header">
                         <h5 class="modal-title" id="editEstudianteModalLabel">Editar Estudiante</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -141,6 +144,7 @@
     <!-- Formulario para cargar estudiantes desde Excel -->
     <h2>Cargar Estudiantes desde Excel</h2>
     <form action="{{ url_for('admin.estudiantes_admin.estudiantes_admin_cargar') }}" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }} <!-- Token CSRF -->
         <div class="form-group">
             <label for="archivo">Selecciona un archivo Excel</label>
             <input type="file" id="archivo" name="archivo" class="form-control-file" accept=".xlsx, .xls" required>
@@ -154,23 +158,25 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $('#editEstudianteModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        var id = button.data('id');
-        var rut = button.data('rut');
-        var nombre = button.data('nombre');
-        var apellido_paterno = button.data('apellido_paterno');
-        var apellido_materno = button.data('apellido_materno');
-        var curso = button.data('curso');
-        var correo_institucional = button.data('correo_institucional');
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var id = button.data('id'); // Extract info from data-* attributes
+    var rut = button.data('rut');
+    var nombre = button.data('nombre');
+    var apellido_paterno = button.data('apellido_paterno');
+    var apellido_materno = button.data('apellido_materno');
+    var curso = button.data('curso');
+    var correo_institucional = button.data('correo_institucional');
 
-        var modal = $(this);
-        modal.find('#edit_rut_estudiante').val(rut);
-        modal.find('#edit_nombre').val(nombre);
-        modal.find('#edit_apellido_paterno').val(apellido_paterno);
-        modal.find('#edit_apellido_materno').val(apellido_materno);
-        modal.find('#edit_curso').val(curso);
-        modal.find('#edit_correo_institucional').val(correo_institucional);
-        modal.find('#editEstudianteForm').attr('action', '{{ url_for("admin.estudiantes_admin.estudiantes_admin_update", id_estudiante=0) }}'.replace('0', id));
-    });
+    var modal = $(this);
+    modal.find('#edit_rut_estudiante').val(rut);
+    modal.find('#edit_nombre').val(nombre);
+    modal.find('#edit_apellido_paterno').val(apellido_paterno);
+    modal.find('#edit_apellido_materno').val(apellido_materno);
+    modal.find('#edit_curso').val(curso);
+    modal.find('#edit_correo_institucional').val(correo_institucional);
+    
+    // Set the form action to include the correct ID
+    modal.find('#editEstudianteForm').attr('action', '{{ url_for("admin.estudiantes_admin.estudiantes_admin_update", id_estudiante=0) }}'.replace('0', id));
+});
 </script>
 {% endblock %}

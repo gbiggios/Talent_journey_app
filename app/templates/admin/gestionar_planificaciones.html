@@ -32,6 +32,7 @@
                         <label for="objetivo_general">Objetivo General</label>
                         <textarea id="objetivo_general" name="objetivo_general" class="form-control" required>{{ taller_seleccionado.objetivo_general }}</textarea>
                     </div>
+                    {{ form.hidden_tag() }} <!-- Token CSRF -->
                     <button type="submit" class="btn btn-primary mt-2">Actualizar Objetivo General</button>
                 </form>
             </div>
@@ -95,6 +96,7 @@
                             <option value="Planificada">Planificada</option>
                         </select>
                     </div>
+                    {{ form.hidden_tag() }} <!-- Token CSRF -->
                     <button type="submit" class="btn btn-primary mt-2">Guardar Planificación</button>
                 </form>
             </div>
@@ -142,6 +144,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    {{ form.hidden_tag() }} <!-- Token CSRF -->
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
@@ -166,6 +169,7 @@
                     <p>¿Estás seguro de que quieres eliminar esta planificación?</p>
                 </div>
                 <div class="modal-footer">
+                    {{ form.hidden_tag() }} <!-- Token CSRF -->
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </div>

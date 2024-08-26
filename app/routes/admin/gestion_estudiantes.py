@@ -2,11 +2,11 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash,
 from flask_login import login_required
 from werkzeug.utils import secure_filename
 import os
-import pandas as pd
 
 from app.routes.admin.decorators import admin_required
 from ...models import Estudiantes
 from ...extensions import db
+from ...forms import EstudiantesForm
 from ...utils import allowed_file, cargar_datos_excel
 
 estudiantes_bp = Blueprint('estudiantes_admin', __name__)
@@ -16,31 +16,30 @@ estudiantes_bp = Blueprint('estudiantes_admin', __name__)
 @admin_required
 def estudiantes():
     estudiantes = Estudiantes.query.all()
-    return render_template('admin/estudiantes.html', estudiantes=estudiantes)
+    form = EstudiantesForm()
+    return render_template('admin/estudiantes.html', estudiantes=estudiantes, form=form)
 
 @estudiantes_bp.route('/create', methods=['POST'], endpoint='estudiantes_admin_create')
 @login_required
 @admin_required
 def create_estudiante():
-    rut_estudiante = request.form['rut_estudiante']
-    nombre = request.form['nombre']
-    apellido_paterno = request.form['apellido_paterno']
-    apellido_materno = request.form['apellido_materno']
-    curso = request.form.get('curso')
-    correo_institucional = request.form.get('correo_institucional')
+    form = EstudiantesForm()
+    if form.validate_on_submit():
+        nuevo_estudiante = Estudiantes(
+            rut_estudiante=form.rut_estudiante.data,
+            nombre=form.nombre.data,
+            apellido_paterno=form.apellido_paterno.data,
+            apellido_materno=form.apellido_materno.data,
+            curso=form.curso.data,
+            correo_institucional=form.correo_institucional.data
+        )
+        
+        db.session.add(nuevo_estudiante)
+        db.session.commit()
+        flash('Estudiante creado exitosamente.', 'success')
+        return redirect(url_for('admin.estudiantes_admin.estudiantes_admin_home'))
     
-    nuevo_estudiante = Estudiantes(
-        rut_estudiante=rut_estudiante,
-        nombre=nombre,
-        apellido_paterno=apellido_paterno,
-        apellido_materno=apellido_materno,
-        curso=curso,
-        correo_institucional=correo_institucional
-    )
-    
-    db.session.add(nuevo_estudiante)
-    db.session.commit()
-    return redirect(url_for('estudiantes_admin_home'))
+    return render_template('admin/estudiantes.html', form=form)
 
 @estudiantes_bp.route('/<int:id_estudiante>/delete', methods=['POST'], endpoint='estudiantes_admin_delete')
 @login_required
@@ -49,29 +48,22 @@ def delete_estudiante(id_estudiante):
     estudiante = Estudiantes.query.get_or_404(id_estudiante)
     db.session.delete(estudiante)
     db.session.commit()
-    return redirect(url_for('estudiantes_admin_home'))
-
-@estudiantes_bp.route('/<int:id_estudiante>/edit', methods=['GET'], endpoint='estudiantes_admin_edit')
-@login_required
-@admin_required
-def edit_estudiante(id_estudiante):
-    estudiante = Estudiantes.query.get_or_404(id_estudiante)
-    return render_template('admin/estudiantes.html', estudiante=estudiante)
+    flash('Estudiante eliminado exitosamente.', 'success')
+    return redirect(url_for('admin.estudiantes_admin.estudiantes_admin_home'))
 
 @estudiantes_bp.route('/<int:id_estudiante>/edit', methods=['POST'], endpoint='estudiantes_admin_update')
 @login_required
 @admin_required
 def update_estudiante(id_estudiante):
     estudiante = Estudiantes.query.get_or_404(id_estudiante)
-    estudiante.rut_estudiante = request.form['rut_estudiante']
-    estudiante.nombre = request.form['nombre']
-    estudiante.apellido_paterno = request.form['apellido_paterno']
-    estudiante.apellido_materno = request.form['apellido_materno']
-    estudiante.curso = request.form.get('curso')
-    estudiante.correo_institucional = request.form.get('correo_institucional')
+    form = EstudiantesForm(obj=estudiante)
+    if form.validate_on_submit():
+        form.populate_obj(estudiante)
+        db.session.commit()
+        flash('Estudiante actualizado exitosamente.', 'success')
+        return redirect(url_for('estudiantes_admin.estudiantes_admin_home'))
     
-    db.session.commit()
-    return redirect(url_for('admin.estudiantes_admin.estudiantes_admin_home'))
+    return render_template('admin/estudiantes.html', estudiante=estudiante, form=form)
 
 
 @estudiantes_bp.route('/cargar_estudiantes', methods=['GET', 'POST'], endpoint='estudiantes_admin_cargar')
@@ -95,6 +87,6 @@ def cargar_estudiantes():
             archivo.save(filepath)
             cargar_datos_excel(filepath)
             flash('Los estudiantes se han cargado exitosamente')
-            return redirect(url_for('estudiantes_admin_home'))
+            return redirect(url_for('admin.estudiantes_admin.estudiantes_admin_home'))
     
-    return render_template('cargar_estudiantes.html')
+    return render_template('admin/cargar_estudiantes.html')
