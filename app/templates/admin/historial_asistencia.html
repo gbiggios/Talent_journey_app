@@ -1,34 +1,37 @@
 {% extends 'admin/base_admin.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4">Historial de Asistencia para {{ taller.nombre }}</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Historial de Asistencia</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}  <!-- CSRF Token -->
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Estudiante</th>
-                {% for clase in clases %}
-                <th>{{ clase.fecha.strftime('%Y-%m-%d') }}</th>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Estudiante</th>
+                    {% for clase in clases %}
+                        <th>Clase {{ clase.fecha }}</th>
+                    {% endfor %}
+                    <th>Porcentaje de Asistencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estudiante in estudiantes %}
+                <tr>
+                    <td>{{ estudiante.nombre }}</td>
+                    {% for clase in clases %}
+                        <td class="text-center">
+                            <input type="checkbox" name="asistencia_{{ estudiante.id_estudiante }}_{{ clase.id_clase }}"
+                                {% if asistencia_dict[estudiante.id_estudiante][clase.id_clase] %}checked{% endif %}>
+                        </td>
+                    {% endfor %}
+                    <td class="text-center">{{ porcentaje_asistencia[estudiante.id_estudiante] }}%</td>
+                </tr>
                 {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for estudiante in estudiantes %}
-            <tr>
-                <td>{{ estudiante.nombre }} {{ estudiante.apellido_paterno }}</td>
-                {% for clase in clases %}
-                <td>
-                    {% if asistencia_dict[estudiante.id_estudiante][clase.id_clase] %}
-                    ✔️
-                    {% else %}
-                    ❌
-                    {% endif %}
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        {{ form.submit(class="btn btn-primary") }}  <!-- Botón con estilo Bootstrap -->
+    </form>
 </div>
 {% endblock %}

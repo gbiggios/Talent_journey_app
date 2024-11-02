@@ -6,6 +6,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Email, Length
 from app.models import Estudiantes, Taller
 
+
 class LoginForm(FlaskForm):
     username = StringField('Nombre de Usuario', validators=[DataRequired()])
     password = PasswordField('Contraseña', validators=[DataRequired()])
@@ -82,7 +83,6 @@ class PlanificacionForm(FlaskForm):
 
 class AsistenciaEstudianteForm(FlaskForm):
     presencia = BooleanField('Presencia', validators=[DataRequired()])
-    justificacion = TextAreaField('Justificación')
     submit = SubmitField('Guardar Asistencia')
 
 
